@@ -1,0 +1,26 @@
+doctype html
+html(ng-app="whosthat")
+  head
+    title= "Where do I know them from?"
+    link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css")
+    link(rel="stylesheet", href="css/style.min.css")
+    script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js")
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js")
+    script(src="js/scripts.min.js")
+  body(ng-controller="MovieController as movie")
+    .wrapper.col-md-12
+      h1 Who is that guy?
+      //- h2 What are you watching?
+      type-tabs
+      section#cast(ng-show="movie.cast.length")
+        h2 Who was the person in <span class="movie">{{movie.title}}</span> you recognized?
+        div.row
+          button.btn.btn-default.col-sm-4.col-sm-offset-4(ng-click="movie.search = true") Try another movie
+        article.actor.col-sm-4.col-xs-6(ng-repeat="person in movie.cast" ng-click="movie.getCredits(person.id)")
+          h4 {{person.actor}}
+          h5 {{person.character}}
+          img(ng-src="{{person.imgsrc}}")
+      footer
+        p &copy; 2014 
+          a(href="http://mattfairley.com" target="_blank") Matt Fairley

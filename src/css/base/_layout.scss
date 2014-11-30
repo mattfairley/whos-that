@@ -1,0 +1,21 @@
+.wrapper {
+	max-width: 900px;
+	margin:0 auto;
+}
+
+footer {
+  text-align: center;
+}
+
+section {
+  @include clearfix();
+}
+
+article {
+  text-align: center;
+  padding: 5px;
+  height: 373px;
+  &:hover {
+    background: $light;
+  }
+}
