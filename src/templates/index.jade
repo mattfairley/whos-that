@@ -16,11 +16,12 @@ html(ng-app="whosthat")
       section#cast(ng-show="movie.cast.length")
         h2 Who was the person in <span class="movie">{{movie.title}}</span> you recognized?
         div.row
-          button.btn.btn-default.col-sm-4.col-sm-offset-4(ng-click="movie.search = true") Try another movie
-        article.actor.col-sm-4.col-xs-6(ng-repeat="person in movie.cast" ng-click="movie.getCredits(person.id)")
+          button.btn.btn-default.col-sm-4.col-sm-offset-4(ng-click="movie.search = true") Try another
+        article.actor.col-sm-4.col-xs-6(ng-repeat="person in movie.cast")
           h4 {{person.actor}}
           h5 {{person.character}}
           img(ng-src="{{person.imgsrc}}")
+          button.btn.btn-default(ng-click="movie.getCredits(person.id)") That's them!
       footer
         p &copy; 2014 
           a(href="http://mattfairley.com" target="_blank") Matt Fairley

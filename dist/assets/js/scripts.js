@@ -74,7 +74,9 @@
       $http.get('http://api.themoviedb.org/3/tv/'+id+'/season/'+season+'/episode/'+episode+'/credits', { params: { api_key: '9314b8803e6b1e173d0c8a52303b82ce'}}).
         success(function(data){
           movie.cast = [];
+          console.log(data);
           movie.parseCast(movie.episodeCastParse(data));
+          movie.search = false;
         }).
         error(function(){
           console.log('whoops');
@@ -82,10 +84,12 @@
     };
 
     this.episodeCastParse = function(data){
-      console.log(data.guest_stars)
+      console.log('guest stars' + data.guest_stars)
       var cast = data.cast;
       data.guest_stars.forEach(function(guest){
-        cast.push(guest);
+        if (cast.indexOf(guest) < 0){
+          cast.push(guest);
+        }
       });
       return cast;
     };
@@ -104,18 +108,18 @@
     this.parseCast = function(data) {
       console.log(data);
       data.forEach(function(cast){
-        // var pic = '';
-        // if (cast.profile_path) {
-        //   pic = "http://image.tmdb.org/t/p/w185/" + cast.profile_path;
-        // } else {
-        //   pic = 'img/not-found.png';
-        // }
-        if (cast.profile_path){
+        var pic = '';
+        if (cast.profile_path) {
+          pic = "http://image.tmdb.org/t/p/w185/" + cast.profile_path;
+        } else {
+          pic = 'img/not-found.png';
+        }
+        if (cast.name && cast.id){
           movie.cast.push({
             actor: cast.name,
             id: cast.id,
-            character: cast.character,
-            imgsrc: "http://image.tmdb.org/t/p/w185/" + cast.profile_path
+            character: cast.character || '',
+            imgsrc: pic
           });
         }
       });
