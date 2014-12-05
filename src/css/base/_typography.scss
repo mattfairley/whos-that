@@ -1,7 +1,48 @@
+body {
+  font-family: $main-font;
+  background: url(../img/light_wool.png);
+  color: $dark;
+}
+
+h1 {
+  font-family: $display-font;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 h2 {
   text-align: center;
 }
 
 span.movie {
   color: $accent;
+}
+
+p.description{
+  text-align: center;
+  font-size: 16px;
+}
+
+a {
+  color: $accent;
+  &:hover {
+    color: darken($accent, 10);
+    text-decoration: none;
+  }
+}
+
+.btn {
+  font-weight: 700;
+  font-size: 16px;
+  color: $dark;
+  padding: 10px;
+}
+.btn-default {
+  border: 1px solid $accent;
+  color: $accent;
+  &:hover {
+    border: 1px solid $accent;
+    background: rgba($accent, 0.1);
+    color: darken($accent, 10);
+  }
 }

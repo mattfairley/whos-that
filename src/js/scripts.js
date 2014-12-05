@@ -8,9 +8,11 @@
     movie.title = '';
     movie.seasons = [];
     movie.episodes = [];
+    movie.actor = {};
     movie.showID = 0;
     movie.step = 1;
     $scope.date = new Date();
+    $scope.date = $scope.date.toISOString();
 
     this.setStep = function(stepNum){
       movie.step = stepNum;
@@ -85,7 +87,7 @@
           movie.cast = [];
           console.log(data);
           movie.parseCast(movie.episodeCastParse(data));
-          movie.search = false;
+          movie.setStep(2);
         }).
         error(function(){
           console.log('whoops');
@@ -128,18 +130,21 @@
           movie.cast.push({
             actor: cast.name,
             id: cast.id,
-            character: cast.character || '',
+            character: cast.character || ' ',
             imgsrc: pic
           });
         }
       });
     };
 
-    this.getCredits = function(id){
+    this.getCredits = function(id, name, imgsrc){
       movie.credits = [];
-      $http.get('http://api.themoviedb.org/3/person/'+id+'/credits', { params: { api_key: '9314b8803e6b1e173d0c8a52303b82ce'}}).
+      movie.actor.name = name;
+      movie.actor.pic = imgsrc;
+      $http.get('http://api.themoviedb.org/3/person/'+id+'/combined_credits', { params: { api_key: '9314b8803e6b1e173d0c8a52303b82ce'}}).
         success(function(data){
           movie.parseCredits(data.cast);
+          console.log(movie.credits);
           movie.setStep(3);
         }).
         error(function(){
@@ -148,30 +153,48 @@
     };
 
     this.parseCredits = function(data){
-      data.forEach(function(credit){
+      data.forEach(function(credit, i){
         // set poster path
         var poster = '';
         if (credit.poster_path) {
           poster = "http://image.tmdb.org/t/p/w185/" + credit.poster_path;
         } else {
           poster = 'img/not-found.png';
-        };
+        }
         //eliminate future releases
-        // var released = true
-        // if (credit.release_date < $scope.date){
-        //   console.log('ping')
-        //   released = false
+        var released = true;
+        if (credit.release_date > $scope.date || credit.first_air_date > $scope.date){
+          released = false;
+        } else {
+          released = true;
+        }
+        //create valid year
+        // var releaseYear = 0
+        // if (credit.release_date) {
+        //   releaseYear = Number(credit.release_date.substring(0,4))
+        // } else if (credit.first_air_date) {
+        //   releaseYear = Number(credit.first_air_date.substring(0,4))
         // }
+
         // check for valid data
-        if (credit.title && credit.id && credit.released && credit.poster_path) {
+        if (credit.id && released && credit.character && (credit.title || credit.name)) {
           movie.credits.push({
-            title: credit.title,
+            title: credit.title || credit.name,
             id: credit.id,
-            character: credit.character || '',
+            character: credit.character || ' ',
             postersrc: poster,
-            year: Number(credit.release_date.substring(0,4))
+            year: credit.release_date || credit.first_air_date
           });
         }
+        //check latest title against previous titles - pop if the same TO DO FIX
+        // if (i < movie.credits.length){
+        //   for (var j = 0; j < movie.credits.length; j++) {
+        //     if (movie.credits[i].title === movie.credits[j].title && i != j) {
+        //       movie.credits.slice(i, 1);
+        //       break;
+        //     }
+        //   };
+        // };
       });
     };
   }]);

@@ -68,7 +68,7 @@ gulp.task('images', function() {
 });
 
 gulp.task('clean', function(cb) {
-	del(['dist/assets/css', 'dist/assets/js/*.js', 'dist/assets/img'], cb)
+	del(['dist/assets/css', 'dist/assets/js/*.js', 'dist/assets/img', 'dist/assets/*.html'], cb)
 });
 
 gulp.task('default', ['clean'], function() {

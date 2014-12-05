@@ -1,6 +1,8 @@
 .wrapper {
 	max-width: 900px;
 	margin:0 auto;
+  padding: 20px;
+  min-height: 100%;
 }
 
 footer {
@@ -13,8 +15,14 @@ section {
 
 article {
   text-align: center;
+  @include column(4);
+  @include bp(medium-mobile) {
+    @include column(6);
+  }
+  @include bp(small-mobile) {
+    @include column(12);
+  }
   padding: 5px;
-  height: 427px;
   &:hover {
     background: $light;
   }
@@ -23,4 +31,98 @@ article {
     text-align: center;
     margin: 10px auto;
   }
+}
+
+.img-holder {
+  width: 185px;
+  height: 278px;
+  margin: 0 auto;
+  position: relative;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+  }
+}
+
+button.step-back,
+.next-step {
+  @include column(4);
+  @include push(4);
+  margin-top: 10px;
+  margin-bottom: 10px;
+  @include bp(medium-mobile) {
+    @include column(6);
+    @include push(3);
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  @include bp(small-mobile) {
+    @include column(8);
+    @include push(2);
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+}
+
+
+.nav.nav-pills {
+  text-align: center;
+}
+
+.nav.nav-pills>li {
+  display: inline-block;
+  float: none;
+  cursor: pointer;
+  margin: 10px;
+  font-size: 16px;
+  a {
+    border: 1px solid $accent;
+    &:hover {
+      background: rgba($accent, 0.1);
+      color: darken($accent, 10);
+    }
+  }
+  &.active a {
+    background: $accent;
+    color: $light;
+  }
+}
+
+#episode-select {
+  display: block;
+  @include column(4);
+  @include push(4);
+  @include bp(medium-mobile) {
+    @include column(6);
+    @include push(3);
+  }
+  @include bp(small-mobile) {
+    @include column(8);
+    @include push(2);
+  }
+  label {
+    @include column(6);
+    text-align: center;
+    padding: 6px;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  select {
+    @include column(6);
+    margin-bottom: 10px;
+    height: 34px;
+    font-family: $main-font;
+    font-size: 16px;
+  }
+}
+
+input[type=text]{
+  @include column(8);
+  @include push(2);
+  padding: 10px;
+  font-size: 16px;
+  display: inline-block;
+  height: auto;
 }

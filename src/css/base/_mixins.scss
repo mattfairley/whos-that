@@ -10,11 +10,11 @@
 	}
 //Landscape phone to portrait tablet
 	@if $point == medium-mobile {
-		@media (max-width: 620px) { @content; }
+		@media (max-width: 680px) { @content; }
 	}
 //Landscape phones
 	@if $point == small-mobile {
-		@media (max-width: 480px) { @content; }
+		@media (max-width: 460px) { @content; }
 	}
 //Portrait phones and down
 	@if $point == tiny-mobile {
