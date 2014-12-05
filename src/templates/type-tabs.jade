@@ -5,20 +5,21 @@ ul.nav.nav-pills
     a(ng-click="tab.setTab(2)") Movie
 
 section#tv(ng-show="tab.isSet(1)")
-  form(role="form" ng-submit="movie.findShow(show)" ng-show="movie.search")
-    .form-group
+  form(role="form" ng-submit="movie.findShow(show)")
+    fieldset
       label( for="tv-show") What show are you watching?
       input.form-control#tv-show(type="text" ng-model="show" placeholder="Enter Show Title")
-    input.btn.btn-default(type="submit" value="Choose episode")
+    input.btn.btn-default(type="submit" value="What episode?")
   form.form-inline(role="form" ng-submit="movie.getEpisodeCredits(movie.showID, seasonNum, episodeNum)" ng-show="movie.seasons.length")
-    label(for="season") Which season?
-    select.form-control#season(ng-model="seasonNum" ng-change="movie.getEpisodes(movie.showID, seasonNum)" ng-options="season for season in movie.seasons")
-    label(for="episode") Which episode
-    select.form-control#episode(ng-model="episodeNum" ng-options="episode for episode in movie.episodes")
-    input.btn.btn-default(type="submit" value="Find Out")
+    fieldset
+      label(for="season") Which season?
+        select.form-control#season(ng-model="seasonNum" ng-change="movie.getEpisodes(movie.showID, seasonNum)" ng-options="season for season in movie.seasons")
+      label(for="episode") Episode number?
+        select.form-control#episode(ng-model="episodeNum" ng-options="episode for episode in movie.episodes")
+      input.btn.btn-default(type="submit" value="Find Out")
 section#movie(ng-show="tab.isSet(2)")
-  form(ng-submit="movie.findMovie(title)" ng-show="movie.search")
-    .form-group
+  form(ng-submit="movie.findMovie(title)")
+    fieldset
       label(for="movie-title") What movie are you watching?
       input.form-control#movie-title(type="text" ng-model="title" placeholder="Enter Movie Title")
     input.btn.btn-default(type="submit" value="Find Out")

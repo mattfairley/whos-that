@@ -12,16 +12,24 @@ html(ng-app="whosthat")
     .wrapper.col-md-12
       h1 Who is that guy?
       //- h2 What are you watching?
-      type-tabs
-      section#cast(ng-show="movie.cast.length")
+      type-tabs(ng-show="movie.isStep(1)")
+      section#cast(ng-show="movie.cast.length && movie.isStep(2)")
         h2 Who was the person in <span class="movie">{{movie.title}}</span> you recognized?
         div.row
-          button.btn.btn-default.col-sm-4.col-sm-offset-4(ng-click="movie.search = true") Try another
+          button.btn.btn-warning.col-sm-4.col-sm-offset-4(ng-click="movie.setStep(1)") Try another
         article.actor.col-sm-4.col-xs-6(ng-repeat="person in movie.cast")
           h4 {{person.actor}}
           h5 {{person.character}}
           img(ng-src="{{person.imgsrc}}")
-          button.btn.btn-default(ng-click="movie.getCredits(person.id)") That's them!
+          button.btn.btn-success(ng-click="movie.getCredits(person.id)") That's them!
+      section#credits(ng-show="movie.credits.length && movie.isStep(3)")
+          div.row
+            button.btn.btn-warning.col-sm-4.col-sm-offset-4(ng-click="movie.setStep(2)") Back to cast
+          article.credit.col-sm-4.col-xs-6(ng-repeat="credit in movie.credits | orderBy : '-year'")
+            h4 {{credit.title}} 
+              span.year ({{credit.year}})
+            h5(ng-show="credit.character") as {{credit.character}}
+            img(ng-src="{{credit.postersrc}}")
       footer
         p &copy; 2014 
           a(href="http://mattfairley.com" target="_blank") Matt Fairley

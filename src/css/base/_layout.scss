@@ -14,8 +14,13 @@ section {
 article {
   text-align: center;
   padding: 5px;
-  height: 410px;
+  height: 427px;
   &:hover {
     background: $light;
+  }
+  .btn {
+    display: block;
+    text-align: center;
+    margin: 10px auto;
   }
 }

@@ -6,10 +6,19 @@
     movie.cast = [];
     movie.credits = [];
     movie.title = '';
-    movie.search = true;
     movie.seasons = [];
     movie.episodes = [];
     movie.showID = 0;
+    movie.step = 1;
+    $scope.date = new Date();
+
+    this.setStep = function(stepNum){
+      movie.step = stepNum;
+    };
+
+    this.isStep = function(checkStep) {
+      return this.step === checkStep;
+    };
 
     this.findMovie = function(title){
       //goddamn se7en
@@ -84,7 +93,7 @@
     };
 
     this.episodeCastParse = function(data){
-      console.log('guest stars' + data.guest_stars)
+      console.log('guest stars' + data.guest_stars);
       var cast = data.cast;
       data.guest_stars.forEach(function(guest){
         if (cast.indexOf(guest) < 0){
@@ -99,6 +108,7 @@
       $http.get('http://api.themoviedb.org/3/movie/'+id+'/credits', { params: { api_key: '9314b8803e6b1e173d0c8a52303b82ce'}}).
         success(function(data){
           movie.parseCast(data.cast);
+          movie.setStep(2);
         }).
         error(function(){
           console.log('whoops');
@@ -123,7 +133,6 @@
           });
         }
       });
-      console.log(movie.cast);
     };
 
     this.getCredits = function(id){
@@ -131,6 +140,7 @@
       $http.get('http://api.themoviedb.org/3/person/'+id+'/credits', { params: { api_key: '9314b8803e6b1e173d0c8a52303b82ce'}}).
         success(function(data){
           movie.parseCredits(data.cast);
+          movie.setStep(3);
         }).
         error(function(){
           console.log('whoops');
@@ -145,21 +155,25 @@
           poster = "http://image.tmdb.org/t/p/w185/" + credit.poster_path;
         } else {
           poster = 'img/not-found.png';
-        }
+        };
+        //eliminate future releases
+        // var released = true
+        // if (credit.release_date < $scope.date){
+        //   console.log('ping')
+        //   released = false
+        // }
         // check for valid data
-        if (credit.title && credit.id && credit.release_date && credit.poster_path) {
+        if (credit.title && credit.id && credit.released && credit.poster_path) {
           movie.credits.push({
             title: credit.title,
             id: credit.id,
             character: credit.character || '',
             postersrc: poster,
-            year: credit.release_date
+            year: Number(credit.release_date.substring(0,4))
           });
         }
       });
-      console.log(movie.credits);
     };
-
   }]);
 
   app.directive('typeTabs', function() {
