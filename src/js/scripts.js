@@ -164,7 +164,6 @@
       movie.actor.pic = imgsrc;
       $http.get('http://api.themoviedb.org/3/person/'+id+'/combined_credits', { params: { api_key: '9314b8803e6b1e173d0c8a52303b82ce'}}).
         success(function(data){
-          console.log(data.cast);
           movie.parseCredits(data.cast);
           movie.setStep(3);
           movie.scrollTop(300);
@@ -193,7 +192,6 @@
 
         // check for valid data
         if (credit.id && released && (credit.title || credit.name)) {
-          console.log(credit.name);
           movie.credits.push({
             title: credit.title || '\"'+credit.name+'\"',
             id: credit.id,
