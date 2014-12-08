@@ -1,10 +1,11 @@
 doctype html
 html(ng-app="whosthat")
   head
-    title= "Where do I know them from?"
+    title= "Hey! It's that guy"
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css")
     link(rel="stylesheet", type="text/css", href="http://fonts.googleapis.com/css?family=Lato:300,400|Montserrat")
     link(rel="stylesheet", href="css/style.min.css")
+    link(rel='icon' href='img/favicon.png')
     script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js")
     script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js")
     script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js")
@@ -15,6 +16,8 @@ html(ng-app="whosthat")
       type-tabs(ng-show="movie.isStep(1)")
       section#cast(ng-show="movie.cast.length && movie.isStep(2)")
         h2 Who was the person in <span class="movie">{{movie.title}}</span> you recognized?
+        //- div.checkbox(ng-if="movie.isTVshow")
+        //-   input(type="checkbox" ng-model="movie.guestFilter")
         div.row
           button.btn.btn-warning.step-back(ng-click="movie.setStep(1)") Watching something else?
         article.actor(ng-repeat="person in movie.cast")
@@ -33,9 +36,13 @@ html(ng-app="whosthat")
         article.credit(ng-repeat="credit in movie.credits | orderBy : '-year'")
           h3 {{credit.title}} 
             span.year ({{credit.year | limitTo: 4}})
-          h4(ng-show="credit.character") as {{credit.character}}
+          h4(ng-show="credit.character") {{credit.character}} 
+            span.episode-count(ng-if="credit.episodeCount") (<ng-pluralize count="credit.episodeCount" when="{'one': '{} episode', 'other':'{} episodes'}"></ng-pluralize>)
           .img-holder
             img(ng-src="{{credit.postersrc}}")
+      section#api-down(ng-show="movie.isStep(4)")
+        p.error Uh oh, it looks like the TMDb database is down. Wait a few minutes or reload maybe?
+        button.btn.btn-error(ng-click="movie.setStep(1)") Try again!
       footer
         p &copy; 2014 
           a(href="http://mattfairley.com" target="_blank") Matt Fairley

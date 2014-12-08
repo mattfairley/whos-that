@@ -11,6 +11,7 @@
     movie.actor = {};
     movie.showID = 0;
     movie.step = 1;
+    movie.dbError = false;
     $scope.date = new Date();
     $scope.date = $scope.date.toISOString();
 
@@ -29,29 +30,38 @@
       }
       $http.get('http://api.themoviedb.org/3/search/movie', { params: { api_key: '9314b8803e6b1e173d0c8a52303b82ce', query: title }}).
         success(function(data){
-          movie.movieID = data.results[0].id;
-          movie.title = data.results[0].title;
-          movie.getCast(movie.movieID);
-          movie.search = false;
+          if (data.results.length > 0){
+            movie.dbError = false;
+            movie.movieID = data.results[0].id;
+            movie.title = data.results[0].title;
+            movie.getCast(movie.movieID);
+            // movie.isTVshow = false;
+          } else {
+            //throw error message up if no matches
+            movie.dbError = true;
+          }
         }).
         error(function(){
-          console.log('whoops');
+          movie.setStep(4);
         });
     };
 
     this.findShow = function(title){
       $http.get('http://api.themoviedb.org/3/search/tv', { params: { api_key: '9314b8803e6b1e173d0c8a52303b82ce', query: title }}).
         success(function(data){
-          console.log(data);
-          movie.showID = data.results[0].id;
-          movie.title = data.results[0].name;
-          console.log(movie.title);
-          console.log(movie.showID);
-
-          movie.getSeasonInfo(movie.showID);
+          if (data.results.length > 0){
+            movie.dbError = false;
+            movie.showID = data.results[0].id;
+            movie.title = data.results[0].name;  
+            movie.getSeasonInfo(movie.showID);
+            // movie.isTVshow = true;
+          } else {
+            //throw error message up if no matches
+            movie.dbError = true;
+          }
         }).
         error(function(){
-          console.log('whoops');
+          movie.setStep(4);
         });
     };
 
@@ -60,7 +70,7 @@
         success(function(data){
           movie.seasons = movie.count(data.number_of_seasons);
         }).error(function(){
-          console.log('whoops');
+          movie.setStep(4);
         });
     };
 
@@ -77,7 +87,7 @@
         success(function(data){
           movie.episodes = movie.count(data.episodes.length);
         }).error(function(){
-          console.log('whoops');
+          movie.setStep(4);
         });
     };
 
@@ -85,24 +95,13 @@
       $http.get('http://api.themoviedb.org/3/tv/'+id+'/season/'+season+'/episode/'+episode+'/credits', { params: { api_key: '9314b8803e6b1e173d0c8a52303b82ce'}}).
         success(function(data){
           movie.cast = [];
-          console.log(data);
-          movie.parseCast(movie.episodeCastParse(data));
+          movie.parseCast(data.cast, data.guest_stars);
           movie.setStep(2);
+          movie.scrollTop(300);
         }).
         error(function(){
-          console.log('whoops');
+          movie.setStep(4);
         });
-    };
-
-    this.episodeCastParse = function(data){
-      console.log('guest stars' + data.guest_stars);
-      var cast = data.cast;
-      data.guest_stars.forEach(function(guest){
-        if (cast.indexOf(guest) < 0){
-          cast.push(guest);
-        }
-      });
-      return cast;
     };
 
     this.getCast = function(id) {
@@ -111,30 +110,52 @@
         success(function(data){
           movie.parseCast(data.cast);
           movie.setStep(2);
+          movie.scrollTop(300);
         }).
         error(function(){
-          console.log('whoops');
+          movie.setStep(4);
         });
     };
 
-    this.parseCast = function(data) {
-      console.log(data);
+    this.parseCast = function(data, guest) {
+      guest = guest || 0;
       data.forEach(function(cast){
         var pic = '';
         if (cast.profile_path) {
           pic = "http://image.tmdb.org/t/p/w185/" + cast.profile_path;
         } else {
-          pic = 'img/not-found.png';
+          pic = 'img/not-found.jpg';
         }
-        if (cast.name && cast.id){
+        if (cast.name && cast.id && (cast.character || cast.profile_path)){
           movie.cast.push({
             actor: cast.name,
             id: cast.id,
             character: cast.character || ' ',
-            imgsrc: pic
+            imgsrc: pic,
+            guest: false
           });
         }
       });
+      //add guest stars to the cast list (if they have a valid picture)
+      if (guest) {
+        guest.forEach(function(guestStar){
+          var pic = '';
+          if (guestStar.profile_path) {
+            pic = "http://image.tmdb.org/t/p/w185/" + guestStar.profile_path;
+          } else {
+            pic = 'img/not-found.jpg';
+          }
+          if (guestStar.name && guestStar.id && (guestStar.profile_path || guestStar.character)){
+            movie.cast.push({
+              actor: guestStar.name,
+              id: guestStar.id,
+              character: guestStar.character || ' ',
+              imgsrc: pic,
+              guest: true
+            });
+          }
+        });
+      }
     };
 
     this.getCredits = function(id, name, imgsrc){
@@ -143,12 +164,13 @@
       movie.actor.pic = imgsrc;
       $http.get('http://api.themoviedb.org/3/person/'+id+'/combined_credits', { params: { api_key: '9314b8803e6b1e173d0c8a52303b82ce'}}).
         success(function(data){
+          console.log(data.cast);
           movie.parseCredits(data.cast);
-          console.log(movie.credits);
           movie.setStep(3);
+          movie.scrollTop(300);
         }).
         error(function(){
-          console.log('whoops');
+          movie.setStep(4);
         });
     };
 
@@ -159,7 +181,7 @@
         if (credit.poster_path) {
           poster = "http://image.tmdb.org/t/p/w185/" + credit.poster_path;
         } else {
-          poster = 'img/not-found.png';
+          poster = 'img/not-found.jpg';
         }
         //eliminate future releases
         var released = true;
@@ -168,34 +190,39 @@
         } else {
           released = true;
         }
-        //create valid year
-        // var releaseYear = 0
-        // if (credit.release_date) {
-        //   releaseYear = Number(credit.release_date.substring(0,4))
-        // } else if (credit.first_air_date) {
-        //   releaseYear = Number(credit.first_air_date.substring(0,4))
-        // }
 
         // check for valid data
-        if (credit.id && released && credit.character && (credit.title || credit.name)) {
+        if (credit.id && released && (credit.title || credit.name)) {
+          console.log(credit.name);
           movie.credits.push({
-            title: credit.title || credit.name,
+            title: credit.title || '\"'+credit.name+'\"',
             id: credit.id,
             character: credit.character || ' ',
             postersrc: poster,
+            episodeCount: credit.episode_count || '',
             year: credit.release_date || credit.first_air_date
           });
         }
-        //check latest title against previous titles - pop if the same TO DO FIX
-        // if (i < movie.credits.length){
-        //   for (var j = 0; j < movie.credits.length; j++) {
-        //     if (movie.credits[i].title === movie.credits[j].title && i != j) {
-        //       movie.credits.slice(i, 1);
-        //       break;
-        //     }
-        //   };
-        // };
       });
+      movie.removeDuplicates(movie.credits);
+    };
+    this.removeDuplicates = function(creditArray){
+        creditArray.forEach(function(credit, i){
+          for (var j = 0; j < creditArray.length; j++){
+            if (credit.title === creditArray[j].title && i !=j){
+              creditArray.splice(j, 1);
+            }  
+          }
+        }); 
+    };
+    this.scrollTop = function(scrollDuration) {
+        var scrollStep = -window.scrollY / (scrollDuration / 15),
+            scrollInterval = setInterval(function(){
+            if ( window.scrollY > 100 ) {
+                window.scrollBy( 0, scrollStep );
+            }
+            else clearInterval(scrollInterval); 
+        },15);
     };
   }]);
 

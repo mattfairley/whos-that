@@ -9,17 +9,21 @@ ul.nav.nav-pills
 section#tv(ng-show="tab.isSet(1)")
   form(role="form" ng-submit="movie.findShow(movie.show)")
     label( for="tv-show")
-    input.form-control#tv-show(type="text" ng-model="movie.show" placeholder="Enter Show Title" required)
+    p.error(ng-show="movie.dbError") Whoops! We couldn't find anything called {{movie.show}} in the database. Check your spelling and try again.
+    input.form-control#tv-show(type="text" ng-model="movie.show" ng-class="{'error': movie.dbError}" placeholder="Enter Show Title" required)
     input.btn.btn-default.next-step(type="submit" ng-class="{'disabled': movie.show == $invalid}" value="What episode?")
   form(role="form" ng-submit="movie.getEpisodeCredits(movie.showID, seasonNum, episodeNum)" ng-show="movie.seasons.length" novalidate)
     div#episode-select
-      label(for="season") Season:
-      select.form-control#season(ng-model="seasonNum" ng-change="movie.getEpisodes(movie.showID, seasonNum)" ng-options="season for season in movie.seasons" required)
-      label(for="episode") Episode:
-      select.form-control#episode(ng-model="episodeNum" ng-options="episode for episode in movie.episodes" required)
+      div.select
+        label(for="season") Season:
+        select.form-control#season(ng-model="seasonNum" ng-change="movie.getEpisodes(movie.showID, seasonNum)" ng-options="season for season in movie.seasons" required)
+      div.select
+        label(for="episode") Episode:
+        select.form-control#episode(ng-model="episodeNum" ng-options="episode for episode in movie.episodes" required)
     input.btn.btn-default.next-step(type="submit" value="Find Out" ng-class="{'disabled' : episodeNum == $invalid || seasonNum == $invalid}")
 section#movie(ng-show="tab.isSet(2)")
   form(ng-submit="movie.findMovie(title)")
     label(for="movie-title")
-    input.form-control#movie-title(type="text" ng-model="title" placeholder="Enter Movie Title")
+    p.error(ng-show="movie.dbError") Whoops! We couldn't find anything called {{title}} in the database. Check your spelling and try again.
+    input.form-control#movie-title(type="text" ng-model="title" placeholder="Enter Movie Title" ng-class="{'error': movie.dbError}")
     input.btn.btn-default.next-step(type="submit" value="Find Out" ng-class="{'disabled': title == $invalid}")

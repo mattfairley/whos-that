@@ -21,15 +21,27 @@ article {
   }
   @include bp(small-mobile) {
     @include column(12);
+    padding-bottom: 20px;
+    border-bottom: 1px solid $dark;
   }
   padding: 5px;
-  &:hover {
-    background: $light;
-  }
   .btn {
     display: block;
     text-align: center;
     margin: 10px auto;
+  }
+}
+//fixing grid floats
+article:nth-of-type(3n+1){
+  clear: both;
+  @include bp(medium-mobile) {
+    clear: none;
+  }
+}
+
+article:nth-of-type(2n+1){
+  @include bp(medium-mobile) {
+    clear: both;
   }
 }
 
@@ -117,6 +129,9 @@ button.step-back,
     font-size: 16px;
   }
 }
+div.select {
+  clear: both;
+}
 
 input[type=text]{
   @include column(8);
@@ -125,4 +140,18 @@ input[type=text]{
   font-size: 16px;
   display: inline-block;
   height: auto;
+  &.error {
+    border-color: crimson;
+  }
+}
+
+p.error {
+  clear: both;
+  color: crimson;
+  font-size: 16px;
+  text-align: center;
+  @include column(8);
+  @include push(2);
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
