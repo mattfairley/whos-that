@@ -156,6 +156,7 @@
           }
         });
       }
+      movie.removeDuplicates(movie.cast, 'actor');
     };
 
     this.getCredits = function(id, name, imgsrc){
@@ -202,12 +203,12 @@
           });
         }
       });
-      movie.removeDuplicates(movie.credits);
+      movie.removeDuplicates(movie.credits, 'title');
     };
-    this.removeDuplicates = function(creditArray){
+    this.removeDuplicates = function(creditArray, param){
         creditArray.forEach(function(credit, i){
           for (var j = 0; j < creditArray.length; j++){
-            if (credit.title === creditArray[j].title && i !=j){
+            if (credit[param] === creditArray[j][param] && i !=j){
               creditArray.splice(j, 1);
             }  
           }
